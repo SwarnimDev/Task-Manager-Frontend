@@ -1,62 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../components/AuthLayout';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { useSignUp } from '../features/auth/hooks/useSignUp';
 
 
 export function SignUp() {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+    const navigate = useNavigate();
+  const { mutate: registerUser, isPending } = useSignUp();
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{
-    fullName?: string;
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-  }>({});
+  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; confirmPassword?: string }>({});
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Reset errors
-    setErrors({});
-    // Basic validation
-    const newErrors: {
-      fullName?: string;
-      email?: string;
-      password?: string;
-      confirmPassword?: string;
-    } = {};
-    if (!fullName) {
-      newErrors.fullName = 'Full name is required';
-    }
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    if (!password) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    // Show loading state and simulate API call
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      // Handle successful registration here
-    }, 1500);
+    const newErrors: typeof errors = {};
+    if (!fullName) newErrors.fullName = "Full name is required";
+    if (!email) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email is invalid";
+    if (!password) newErrors.password = "Password is required";
+    else if (password.length < 8) newErrors.password = "Password must be at least 8 characters";
+    if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+    if (Object.keys(newErrors).length > 0) return setErrors(newErrors);
+
+    registerUser(
+      { fullName, email, password, confirmPassword },
+      {
+        onSuccess: () => {
+          navigate("/signin");
+        },
+        onError: (err: any) => {
+          setErrors({ email: err || "Registration failed" });
+        },
+      }
+    );
   };
+  
   return <AuthLayout title="Create an account" subtitle="Sign up to start managing your projects">
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         <div className="space-y-4">
@@ -83,7 +68,7 @@ export function SignUp() {
             </a>
           </label>
         </div> */}
-        <Button type="submit" fullWidth isLoading={isLoading}>
+        <Button type="submit" fullWidth isLoading={isPending}>
           Create account
         </Button>
         <div className="text-center">

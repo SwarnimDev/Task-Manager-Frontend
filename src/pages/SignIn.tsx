@@ -1,48 +1,43 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../components/AuthLayout';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { useSignIn } from '../features/auth/hooks/useSignIn';
 
 
 export function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+   const navigate = useNavigate();
+  const { mutate: loginUser, isPending} = useSignIn();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{
-    email?: string;
-    password?: string;
-  }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Reset errors
-    setErrors({});
-    // Basic validation
-    const newErrors: {
-      email?: string;
-      password?: string;
-    } = {};
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    if (!password) {
-      newErrors.password = 'Password is required';
-    }
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    // Show loading state and simulate API call
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      // Handle successful login here
-    }, 1500);
+    const newErrors: { email?: string; password?: string } = {};
+    if (!email) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email is invalid";
+    if (!password) newErrors.password = "Password is required";
+    if (Object.keys(newErrors).length > 0) return setErrors(newErrors);
+
+    loginUser(
+      { email, password },
+      {
+        onSuccess: (data: any) => {
+          localStorage.setItem("token", data.token);
+          navigate("/dashboard"); 
+        },
+        onError: (err: any) => {
+          setErrors({ email: err || "Login failed" });
+        },
+      }
+    );
   };
+
   return <AuthLayout title="Welcome back" subtitle="Sign in to your account to continue">
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
         <div className="space-y-4">
@@ -67,7 +62,7 @@ export function SignIn() {
             </a>
           </div>
         </div>
-        <Button type="submit" fullWidth isLoading={isLoading}>
+        <Button type="submit" fullWidth isLoading={isPending}>
           Sign in
         </Button>
         <div className="text-center">
