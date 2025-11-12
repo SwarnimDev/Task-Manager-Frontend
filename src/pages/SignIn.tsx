@@ -24,7 +24,7 @@ export function SignIn() {
     if (!password) newErrors.password = "Password is required";
     if (Object.keys(newErrors).length > 0) return setErrors(newErrors);
 
-    loginUser(
+    loginUser(  
       { email, password },
       {
         onSuccess: (data: any) => {
