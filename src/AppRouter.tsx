@@ -4,7 +4,7 @@ import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
 import DashBoard from './pages/DashBoard';
 import Settings from './pages/Settings';
-import Tasks from './pages/Tasks';
+import Tasks from './pages/Projects';
 import Timeline from './pages/Timeline';
 
 export function AppRouter() {
