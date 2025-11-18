@@ -56,7 +56,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
         {/* Icons (centered vertically) */}
         <nav className="flex-1 flex flex-col items-center justify-center space-y-8">
           <SidebarItem icon={LayoutDashboard} label="Dashboard" />
-          <SidebarItem icon={CheckSquare} label="Tasks" />
+          <SidebarItem icon={CheckSquare} label="Projects" />
           <SidebarItem icon={Settings} label="Settings" />
           <SidebarItem icon={History} label="Timeline" />
         </nav>

@@ -4,7 +4,7 @@ import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
 import DashBoard from './pages/DashBoard';
 import Settings from './pages/Settings';
-import Tasks from './pages/Projects';
+import Projects from './pages/Projects';
 import Timeline from './pages/Timeline';
 
 export function AppRouter() {
@@ -14,7 +14,7 @@ export function AppRouter() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<DashBoard/>} />
-          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/projects" element={<Projects />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/timeline" element={<Timeline />} />
       </Routes>

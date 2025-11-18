@@ -1,5 +1,5 @@
 import DashboardLayout from "../components/DashboardLayout";
-import { Button, CircularProgress, Typography} from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import Grid from "@mui/system/Grid";
 import { useState } from "react";
 import { useProjects } from "../features/auth/hooks/useProjects";
@@ -8,8 +8,10 @@ import ProjectForm from "../components/ProjectForm";
 import { ProjectInput } from "../features/auth/api/projectsApi";
 
 const Projects = () => {
-  const { projectsQuery, addProject, removeProject } = useProjects();
+  const { projectsQuery, editProject, addProject, removeProject } =
+    useProjects();
   const [openForm, setOpenForm] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   if (projectsQuery.isLoading) {
     return (
@@ -24,13 +26,16 @@ const Projects = () => {
   return (
     <DashboardLayout>
       <div className="flex justify-between items-center mb-6">
-        <Typography variant="h5" className="text-[#23235F] font-semibold">
+        <Typography variant="h5" className="text-[#232360] font-bold">
           Your Projects
         </Typography>
         <Button
           variant="contained"
           onClick={() => setOpenForm(true)}
-          className="bg-[#23235F]"
+          sx={{
+            backgroundColor: "1EA7FF",
+            color: "#fff",
+          }}
         >
           + New Project
         </Button>
@@ -49,6 +54,10 @@ const Projects = () => {
             <ProjectCard
               project={project}
               onDelete={() => removeProject.mutate(project._id)}
+              onEdit={() => {
+                setSelectedProject(project);
+                setOpenForm(true);
+              }}
             />
           </Grid>
         ))}
@@ -57,8 +66,23 @@ const Projects = () => {
       {openForm && (
         <ProjectForm
           open={openForm}
-          onClose={() => setOpenForm(false)}
-          onSubmit={(data: ProjectInput) => addProject.mutate(data)}
+          project={selectedProject}
+          onClose={() => {
+            setSelectedProject(null); // reset on close
+            setOpenForm(false);
+          }}
+          onSubmit={(data: ProjectInput) => {
+            if (selectedProject) {
+              // EDIT MODE
+              editProject.mutate({
+                id: selectedProject._id,
+                data,
+              });
+            } else {
+              // CREATE MODE
+              addProject.mutate(data);
+            }
+          }}
         />
       )}
     </DashboardLayout>
