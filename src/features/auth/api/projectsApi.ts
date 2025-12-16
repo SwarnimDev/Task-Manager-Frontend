@@ -8,6 +8,9 @@ export interface ProjectInput {
 export const getProjects = () =>
   axiosClient.get("/projects").then((res) => res.data);
 
+export const getProjectById = (id: string) =>
+  axiosClient.get(`/projects/${id}`).then((res) => res.data);
+
 export const createProject = (data: ProjectInput) =>
   axiosClient.post("/projects", data).then((res) => res.data);
 
